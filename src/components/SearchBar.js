@@ -63,17 +63,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SearchBar(props) {
+export default function SearchBar({ onHandleSubmit }) {
   const classes = useStyles();
-  const [searchTerm, setSearchTerm] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const onChangeHandle = (event) => setSearchTerm(event.target.value)
 
-  const onSubmitHandle = (event) => {
-      event.preventDefault()
-    //   const { searchTerm } = this.state
-      const { onHandleSubmit } = props
-      onHandleSubmit(searchTerm)
+  const onKeyPressed = (event) => {
+      if (event.key === "Enter") {
+        onHandleSubmit(searchTerm)
+      }
   }
 
   return (
@@ -85,18 +84,17 @@ export default function SearchBar(props) {
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
-            <form onSubmit={onSubmitHandle}>
-                <InputBase
-                    placeholder="Search…"
-                    classes={{
-                        root: classes.inputRoot,
-                        input: classes.inputInput,
-                    }}
-                    inputProps={{ 'aria-label': 'search' }}
-                    style={{ width: '100%' }}
-                    onChange={onChangeHandle}
-                />
-            </form>
+            <InputBase
+                placeholder="Search…"
+                classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+                style={{ width: '100%' }}
+                onChange={onChangeHandle}
+                onKeyPress={onKeyPressed}
+            />
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>

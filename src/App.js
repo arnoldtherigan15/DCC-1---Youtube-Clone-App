@@ -1,14 +1,14 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { SearchBar, VideoDetail, VideoList } from './components'
 import { Grid } from '@material-ui/core'
 import youtube from './api/youtube'
 
-class App extends React.Component {
-    state = {
-        videos: [],
-        selectedVideo: null
-    }
-    onHandleSubmit = async (searchTerm) => {
+
+const App = () => {
+    const [ videos, setVideos ] = useState([])
+    const [ selectedVideo, setselectedVideo ] = useState(null)
+
+    const onHandleSubmit = async (searchTerm) => {
         const { data } = await youtube({
             method: 'get',
             url: '/search',
@@ -20,37 +20,29 @@ class App extends React.Component {
                 q: searchTerm
             }
         })
-        console.log(data.items,'---------------------------')
-        this.setState({ videos: data.items, selectedVideo: data.items[0] })
+        setVideos( data.items )
+        setselectedVideo(data.items[0])
     }
 
-    onVideoSelect = (video) => {
-        this.setState({ selectedVideo: video })
-    }
-    componentDidMount() {
-        this.onHandleSubmit('fantastic duo')
-    }
+    useEffect(() => {
+        onHandleSubmit('Elevation Worship')
+    },[])
 
-    render() {
-        const { selectedVideo, videos } = this.state
-        // if (selectedVideo)
-        return(
-            <React.Fragment>
-                <Grid xs={12}>
-                    <SearchBar onHandleSubmit={this.onHandleSubmit}></SearchBar>
+    return(
+        <React.Fragment>
+            <Grid item xs={12}>
+                <SearchBar onHandleSubmit={onHandleSubmit}/>
+            </Grid>
+            <Grid container spacing={3} style={{ padding: '20px 40px' }}>
+                <Grid item xs={8}>
+                    <VideoDetail video={ selectedVideo } />
                 </Grid>
-                <Grid container spacing={3} style={{ padding: '20px 40px' }}>
-                    <Grid item xs={8}>
-                        <VideoDetail video={ selectedVideo } />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <VideoList videos={videos} onVideoSelect={this.onVideoSelect}/> 
-                    </Grid>
+                <Grid item xs={4}>
+                    <VideoList videos={videos} onVideoSelect={setselectedVideo}/> 
                 </Grid>
-            </React.Fragment>
-
-        )
-    }
+            </Grid>
+        </React.Fragment>
+    )
 }
 
 export default App
